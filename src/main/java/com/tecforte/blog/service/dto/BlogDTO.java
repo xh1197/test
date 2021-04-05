@@ -31,6 +31,8 @@ public class BlogDTO implements Serializable {
 
     private Instant lastModifiedDate;
 
+    private int entryCount;
+
     public Long getId() {
         return id;
     }
@@ -103,6 +105,14 @@ public class BlogDTO implements Serializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
+    public int getEntryCount() {
+        return entryCount;
+    }
+
+    public void setEntryCount(int entryCount) {
+        this.entryCount = entryCount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -127,11 +137,16 @@ public class BlogDTO implements Serializable {
     @Override
     public String toString() {
         return "BlogDTO{" +
-            "id=" + getId() +
-            ", name='" + getName() + "'" +
-            ", positive='" + isPositive() + "'" +
-            ", user=" + getUserId() +
-            ", user='" + getUserLogin() + "'" +
-            "}";
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", positive=" + positive +
+            ", userId=" + userId +
+            ", userLogin='" + userLogin + '\'' +
+            ", createdBy='" + createdBy + '\'' +
+            ", createdDate=" + createdDate +
+            ", lastModifiedBy='" + lastModifiedBy + '\'' +
+            ", lastModifiedDate=" + lastModifiedDate +
+            ", entryCount=" + entryCount +
+            '}';
     }
 }

@@ -7,6 +7,8 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A Blog.
@@ -31,6 +33,10 @@ public class Blog extends AbstractAuditingEntity implements Serializable {
     @NotNull
     @Column(name = "positive", nullable = false)
     private Boolean positive;
+
+    @OneToMany(mappedBy = "blog")
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    private Set<Entry> entries = new HashSet<>();
 
     @ManyToOne
     @JsonIgnoreProperties("blogs")
@@ -69,6 +75,31 @@ public class Blog extends AbstractAuditingEntity implements Serializable {
 
     public void setPositive(Boolean positive) {
         this.positive = positive;
+    }
+
+    public Set<Entry> getEntries() {
+        return entries;
+    }
+
+    public Blog entries(Set<Entry> entries) {
+        this.entries = entries;
+        return this;
+    }
+
+    public Blog addEntry(Entry entry) {
+        this.entries.add(entry);
+        entry.setBlog(this);
+        return this;
+    }
+
+    public Blog removeEntry(Entry entry) {
+        this.entries.remove(entry);
+        entry.setBlog(null);
+        return this;
+    }
+
+    public void setEntries(Set<Entry> entries) {
+        this.entries = entries;
     }
 
     public User getUser() {

@@ -31,7 +31,7 @@
             "otherEntityName": "blog",
             "otherEntityRelationshipName": "entry",
             "relationshipName": "blog",
-            "otherEntityField": "name"
+            "otherEntityField": "id"
         }
     ],
     "changelogDate": "20200623050628",

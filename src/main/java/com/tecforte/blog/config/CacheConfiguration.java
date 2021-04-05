@@ -45,6 +45,7 @@ public class CacheConfiguration {
             createCache(cm, com.tecforte.blog.domain.Blog.class.getName());
             createCache(cm, com.tecforte.blog.domain.Entry.class.getName());
             createCache(cm, com.tecforte.blog.domain.Entry.class.getName() + ".tags");
+            createCache(cm, com.tecforte.blog.domain.Blog.class.getName() + ".entries");
             // jhipster-needle-ehcache-add-entry
         };
     }

@@ -14,8 +14,11 @@ entity Entry {
 }
 
 relationship ManyToOne {
-  Blog{user(login)} to User,
-  Entry{blog(name)} to Blog
+  Blog{user(login)} to User
+}
+
+relationship OneToMany {
+  Blog{entry} to Entry{blog}
 }
 
 paginate Entry with infinite-scroll

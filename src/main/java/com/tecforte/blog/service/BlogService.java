@@ -54,7 +54,7 @@ public class BlogService {
     @Transactional(readOnly = true)
     public List<BlogDTO> findAll() {
         log.debug("Request to get all Blogs");
-        return blogRepository.findAll().stream()
+        return blogRepository.findAllWithEagerRelationships().stream()
             .map(blogMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));
     }

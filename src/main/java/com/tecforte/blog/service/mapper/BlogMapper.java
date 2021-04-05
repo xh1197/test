@@ -13,8 +13,11 @@ public interface BlogMapper extends EntityMapper<BlogDTO, Blog> {
 
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "user.login", target = "userLogin")
+    @Mapping(target = "entryCount", expression = "java(blog.getEntries().size())")
     BlogDTO toDto(Blog blog);
 
+    @Mapping(target = "entries", ignore = true)
+    @Mapping(target = "removeEntry", ignore = true)
     @Mapping(source = "userId", target = "user")
     Blog toEntity(BlogDTO blogDTO);
 
