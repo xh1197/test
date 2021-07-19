@@ -45,6 +45,8 @@ public class EntryResource {
         this.entryService = entryService;
     }
 
+    
+
     /**
      * {@code POST  /entries} : Create a new entry.
      *
