@@ -1,5 +1,9 @@
 package com.tecforte.blog.web.rest;
 
+import com.tecforte.blog.domain.Blog;
+import com.tecforte.blog.domain.Entry;
+import com.tecforte.blog.repository.BlogRepository;
+import com.tecforte.blog.repository.EntryRepository;
 import com.tecforte.blog.service.BlogService;
 import com.tecforte.blog.web.rest.errors.BadRequestAlertException;
 import com.tecforte.blog.service.dto.BlogDTO;
@@ -8,6 +12,7 @@ import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +21,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * REST controller for managing {@link com.tecforte.blog.domain.Blog}.
@@ -38,6 +42,12 @@ public class BlogResource {
     public BlogResource(BlogService blogService) {
         this.blogService = blogService;
     }
+
+    @Autowired
+    private BlogRepository blogRepository;
+
+    @Autowired
+    private EntryRepository entryRepository;
 
     /**
      * {@code POST  /blogs} : Create a new blog.
@@ -115,5 +125,73 @@ public class BlogResource {
         log.debug("REST request to delete Blog : {}", id);
         blogService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
+    }
+
+    @DeleteMapping("/blogs/clean")
+    public ResponseEntity<Void> cleanKeywords(@RequestParam String keywords) {
+        log.debug("REST request to clean Blog : {}", keywords);
+
+        List<Entry> entryList = entryRepository.findAll();
+        System.out.println("entryList = " + entryList);
+        for (int i=0; i<entryList.size(); i++){
+            Entry entry = entryList.get(i);
+            String title = entry.getTitle();
+            String content = entry.getContent();
+
+            //Check keyword for Title
+            List<String> titleList = Arrays.asList(title.split("\\;|\\:|\\?|\\~|\\/|\\.|,|\\<|\\>|" +
+                "\\`|\\[|\\]|\\{|\\}|\\(|\\)|\\!|\\@|\\#|\\$|\\%|\\^|\\&|\\-|" +
+                "\\_|\\+|\\'|\\=|\\*|\\\"|\\||\\n|\\s|\\r|\\\\"));
+
+            //Check keyword for Content
+            List<String> contentList = Arrays.asList(content.split("\\;|\\:|\\?|\\~|\\/|\\.|,|\\<|\\>|" +
+                "\\`|\\[|\\]|\\{|\\}|\\(|\\)|\\!|\\@|\\#|\\$|\\%|\\^|\\&|\\-|" +
+                "\\_|\\+|\\'|\\=|\\*|\\\"|\\||\\n|\\s|\\r|\\\\"));
+
+            if(titleList.contains(keywords)||contentList.contains(keywords)){
+                entryRepository.delete(entry);
+                System.out.println("Entry with this id is deleted = " + entry.getId());
+            }
+        }
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, "entry", keywords.toString())).build();
+    }
+
+    @DeleteMapping("/blogs/{id}/clean")
+    public ResponseEntity<Void> cleanKeywordsWithBlogID(@PathVariable Long id, @RequestParam String keywords) {
+        log.debug("REST request to clean Blog : {} with keywords : {}", id, keywords);
+
+        //Find All blog
+        List<Blog> blogList = blogRepository.findAllWithEagerRelationships();
+        Set<Entry> entryHashSet = new HashSet<>();
+        for (int i=0; i<blogList.size(); i++){
+            if (blogList.get(i).getId().equals(id)) {
+                entryHashSet = blogList.get(i).getEntries();
+                break;
+            }
+        }
+
+        //Entry List of the Blog id
+        List<Entry> entryList = new ArrayList<Entry>(entryHashSet);
+        for (int i=0; i<entryList.size(); i++){
+            Entry entry = entryList.get(i);
+            String title = entry.getTitle();
+            String content = entry.getContent();
+
+            //Check keyword for Title
+            List<String> titleList = Arrays.asList(title.split("\\;|\\:|\\?|\\~|\\/|\\.|,|\\<|\\>|" +
+                "\\`|\\[|\\]|\\{|\\}|\\(|\\)|\\!|\\@|\\#|\\$|\\%|\\^|\\&|\\-|" +
+                "\\_|\\+|\\'|\\=|\\*|\\\"|\\||\\n|\\s|\\r|\\\\"));
+
+            //Check keyword for Content
+            List<String> contentList = Arrays.asList(content.split("\\;|\\:|\\?|\\~|\\/|\\.|,|\\<|\\>|" +
+                "\\`|\\[|\\]|\\{|\\}|\\(|\\)|\\!|\\@|\\#|\\$|\\%|\\^|\\&|\\-|" +
+                "\\_|\\+|\\'|\\=|\\*|\\\"|\\||\\n|\\s|\\r|\\\\"));
+
+            if(titleList.contains(keywords)||contentList.contains(keywords)){
+                entryRepository.delete(entry);
+                System.out.println("Entry with this id is deleted = " + entry.getId());
+            }
+        }
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, "entry", keywords.toString())).build();
     }
 }
